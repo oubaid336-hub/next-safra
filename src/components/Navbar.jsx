@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -11,6 +11,8 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [user, setUser] = useState(null);
+
+  const alwaysSolid = ["/login", "/signup", "/forgot-password"].includes(pathname);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -47,7 +49,7 @@ export default function Navbar() {
   const isActive = (href) => pathname === href;
 
   return (
-    <nav className={`navbar${scrolled ? " scrolled" : ""}`} id="navbar">
+    <nav className={`navbar${(scrolled || alwaysSolid) ? " scrolled" : ""}`} id="navbar">
       <div className="container nav-inner">
         <Link href="/" className="nav-logo">
           <div className="nav-logo-badge"><span>S</span></div>
@@ -89,8 +91,8 @@ export default function Navbar() {
           </div>
         ) : (
           <div className="nav-auth">
-            <Link href="/login" className="nav-auth-login">Login</Link>
-            <Link href="/signup" className="nav-auth-signup">Sign Up</Link>
+            <Link href="/login" className={`nav-auth-login${isActive("/login") ? " active" : ""}`}>Login</Link>
+            <Link href="/signup" className={`nav-auth-signup${isActive("/signup") ? " active" : ""}`}>Sign Up</Link>
           </div>
         )}
 
