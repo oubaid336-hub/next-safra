@@ -69,6 +69,14 @@ export default function Navbar() {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 13.5 4.5 8A2 2 0 0 1 6.4 6.5h11.2A2 2 0 0 1 19.5 8L21 13.5"/><path d="M3 13.5h18V17a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-1H6v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-3.5Z"/><circle cx="7.5" cy="17" r="1.4"/><circle cx="16.5" cy="17" r="1.4"/></svg>
             Cars
           </Link>
+          <Link href="/faq" className={`nav-link${isActive("/faq") ? " active" : ""}`}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            FAQ
+          </Link>
+          <Link href="/contact" className={`nav-link${isActive("/contact") ? " active" : ""}`}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Contact
+          </Link>
         </div>
 
         {user ? (
@@ -113,6 +121,8 @@ export default function Navbar() {
           <Link href="/">Home</Link>
           <Link href="/houses">Houses</Link>
           <Link href="/cars">Cars</Link>
+          <Link href="/faq">FAQ</Link>
+          <Link href="/contact">Contact</Link>
           <div className="divider"></div>
           {user ? (
             <>

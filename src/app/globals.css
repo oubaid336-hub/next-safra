@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* ==========================================================================
-   SAFRA — Shared Design System
+   SAFRA â€” Shared Design System
    Ported from the React/Tailwind reference (tailwind.config.js + index.css)
    Mobile-first: base styles = phone, then min-width media queries scale up.
    ========================================================================== */
@@ -833,3 +833,24 @@ textarea.form-input { resize: vertical; min-height: 140px; }
 .listing-badges-row .listing-rating-circle { width: 34px; height: 34px; }
 .listing-badges-row .listing-rating-circle .rc-num { font-size: 11px; }
 .listing-badges-row .listing-rating-circle .rc-star { font-size: 8px; }
+
+/* ==========================================================================
+   Homepage-only: newsletter card (was page-local <style> in index.html)
+   ========================================================================== */
+.newsletter-section { background: var(--safra-offwhite); }
+.newsletter-card {
+  max-width: 640px; margin: 0 auto; text-align: center;
+  background: #fff; border-radius: 20px; padding: 48px 32px;
+  box-shadow: 0 15px 40px -12px rgba(0,0,0,0.12);
+}
+.newsletter-card h2 {
+  font-family: 'Playfair Display', serif; font-weight: 700;
+  color: var(--safra-navy); font-size: 1.75rem; margin-bottom: 10px;
+}
+.newsletter-card p { color: var(--safra-gray); font-size: 15px; margin-bottom: 28px; }
+.newsletter-form { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.newsletter-msg { margin-top: 16px; font-size: 13px; display: none; padding: 10px 14px; border-radius: 10px; }
+.newsletter-msg.show.success { display: block; background: #DCFCE7; color: #166534; border: 1px solid #BBF7D0; }
+.newsletter-msg.show.error { display: block; background: #FEE2E2; color: #991B1B; border: 1px solid #FECACA; }
+@media (max-width: 600px) { .newsletter-form { flex-direction: column; } }
+.featured-loading .skeleton-card { min-height: 260px; }
