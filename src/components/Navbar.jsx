@@ -48,6 +48,8 @@ export default function Navbar() {
 
   const isActive = (href) => pathname === href;
 
+  if (pathname.startsWith("/admin")) return null;
+
   return (
     <nav className={`navbar${(scrolled || alwaysSolid) ? " scrolled" : ""}`} id="navbar">
       <div className="container nav-inner">

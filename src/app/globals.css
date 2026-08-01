@@ -871,3 +871,40 @@ textarea.form-input { resize: vertical; min-height: 140px; }
 }
 .admin-page .auth-card h1 { font-size: 1.5rem; }
 .admin-page .auth-card .subtitle { margin-bottom: 24px; }
+
+/* ==========================================================================
+   Admin shell (topbar + nav + main, all admin pages except login)
+   ========================================================================== */
+.admin-shell { font-family: 'Inter', sans-serif; background: #F4F2ED; min-height: 100vh; }
+.admin-topbar {
+  background: var(--safra-navy); color: #fff;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 24px;
+}
+.admin-topbar .brand { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; }
+.admin-topbar .brand span { opacity: .65; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500; margin-left: 8px; }
+#logoutBtn {
+  background: transparent; border: 1px solid rgba(255,255,255,.4); color: #fff;
+  padding: 8px 16px; border-radius: 999px; font-size: 13px; font-weight: 600; cursor: pointer;
+}
+#logoutBtn:hover { background: rgba(255,255,255,.1); }
+.admin-nav {
+  background: #fff; border-bottom: 1px solid #E5DFD2; padding: 0 24px;
+  display: flex; gap: 4px; overflow-x: auto;
+}
+.admin-nav a {
+  display: inline-block; padding: 14px; font-size: 13px; font-weight: 600;
+  color: #6B6558; text-decoration: none; white-space: nowrap; border-bottom: 2px solid transparent;
+}
+.admin-nav a.active { color: var(--safra-navy); border-bottom-color: var(--safra-terracotta); }
+.admin-main { max-width: 1000px; margin: 0 auto; padding: 32px 24px 64px; }
+.admin-main h1 { font-family: 'Playfair Display', serif; font-size: 26px; color: var(--safra-navy); margin: 0 0 6px; }
+.admin-main p.sub { color: #8A8377; font-size: 14px; margin: 0 0 28px; }
+#statusBanner { margin-bottom: 24px; padding: 14px 16px; border-radius: 10px; font-size: 14px; background: #FBEAE9; color: #8C2E27; border: 1px solid #F0C4C0; }
+#statsGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
+.stat-card { background: #fff; border-radius: 14px; padding: 22px 20px; box-shadow: 0 2px 12px rgba(27,42,65,.06); }
+.stat-card .stat-value { font-family: 'Playfair Display', serif; font-size: 32px; color: var(--safra-navy); font-weight: 700; line-height: 1; margin-bottom: 8px; }
+.stat-card .stat-label { font-size: 13px; color: #8A8377; font-weight: 500; }
+.stat-card.nested { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 24px; }
+.stat-card.nested .stat-label.group-label { width: 100%; font-weight: 700; color: var(--safra-navy); font-size: 14px; margin-bottom: 4px; }
+#loadingMsg, #emptyMsg { color: #8A8377; font-size: 14px; }
