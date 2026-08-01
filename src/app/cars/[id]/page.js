@@ -214,7 +214,7 @@ export default function CarDetailPage() {
             <p className="detail-desc">{car.description || ""}</p>
 
             <div className="car-actions">
-              <Link href={`/booking?carId=${car._id}`} id="bookNowBtn">Book This Car</Link>
+              <Link href={`/car-booking?carId=${car._id}`} id="bookNowBtn">Book This Car</Link>
               {wishlistVisible && (
                 <button type="button" id="wishlistBtn" onClick={toggleWishlist} disabled={wishlistBusy}>
                   {wishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
