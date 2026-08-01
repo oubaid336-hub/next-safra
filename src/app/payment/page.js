@@ -154,7 +154,7 @@ function PaymentContent() {
               <h3>Pay on arrival (cash)</h3>
               <p>Reserve now, pay the full amount in cash when you arrive.</p>
               {confirmed ? (
-                <p className="option-status success">Reservation requested — you&apos;ll get a confirmation once it&apos;s approved.</p>
+                <p className="option-status success">Reservation requested â€” you&apos;ll get a confirmation once it&apos;s approved.</p>
               ) : (
                 <button
                   type="button"
@@ -162,7 +162,7 @@ function PaymentContent() {
                   onClick={handleConfirmCash}
                   disabled={confirming}
                 >
-                  {confirming ? "Confirming…" : "Reserve — Pay on Arrival"}
+                  {confirming ? "Confirmingâ€¦" : "Reserve â€” Pay on Arrival"}
                 </button>
               )}
               {formMessage.text && (

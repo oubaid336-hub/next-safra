@@ -7,7 +7,7 @@ import { getApiBaseUrl } from "@/lib/config";
 
 const STATUS_LABELS = {
   pending: "Pending",
-  "pending-cash-payment": "Reserved — Pay on Arrival",
+  "pending-cash-payment": "Reserved â€” Pay on Arrival",
   confirmed: "Confirmed",
   cancelled: "Cancelled",
 };
@@ -209,7 +209,7 @@ export default function MyBookingsPage() {
                           onClick={() => handleCancel(booking)}
                           disabled={cancellingId === booking._id}
                         >
-                          {cancellingId === booking._id ? "Cancelling…" : "Cancel Booking"}
+                          {cancellingId === booking._id ? "Cancellingâ€¦" : "Cancel Booking"}
                         </button>
                       )}
                     </div>

@@ -214,7 +214,7 @@ function CarBookingContent() {
             <p className="specs" id="car-specs">
               {[car.seats ? `${car.seats} seats` : null, car.transmission || null, car.year || null]
                 .filter(Boolean)
-                .join(" · ")}
+                .join(" Â· ")}
             </p>
             <p id="car-description">{car.description || ""}</p>
           </section>
@@ -252,7 +252,7 @@ function CarBookingContent() {
               )}
 
               <button type="submit" className="btn btn-terracotta" id="submit-btn" disabled={submitting}>
-                {submitting ? "Submitting…" : "Request Booking"}
+                {submitting ? "Submittingâ€¦" : "Request Booking"}
               </button>
 
               {formMessage.text && (

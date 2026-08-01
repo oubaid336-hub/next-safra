@@ -234,7 +234,7 @@ export default function CarDetailPage() {
               </div>
               <div id="reviewsList">
                 {reviewsLoading ? (
-                  <p className="no-reviews">Loading reviews…</p>
+                  <p className="no-reviews">Loading reviewsâ€¦</p>
                 ) : reviewsError ? (
                   <p className="no-reviews">Could not load reviews.</p>
                 ) : reviews.length === 0 ? (

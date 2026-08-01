@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* ==========================================================================
-   SAFRA â€” Shared Design System
+   SAFRA Ã¢â‚¬â€ Shared Design System
    Ported from the React/Tailwind reference (tailwind.config.js + index.css)
    Mobile-first: base styles = phone, then min-width media queries scale up.
    ========================================================================== */
@@ -910,7 +910,7 @@ textarea.form-input { resize: vertical; min-height: 140px; }
 #loadingMsg, #emptyMsg { color: #8A8377; font-size: 14px; }
 
 /* ==========================================================================
-   Admin � Houses & Cars management (renamed from vanilla's .listing-card/
+   Admin — Houses & Cars management (renamed from vanilla's .listing-card/
    .listing-thumb/.section-title to avoid collision with the customer-facing
    classes of the same name already defined above)
    ========================================================================== */
@@ -955,7 +955,7 @@ textarea.form-input { resize: vertical; min-height: 140px; }
 }
 
 /* ==========================================================================
-   Admin � Bookings management
+   Admin — Bookings management
    ========================================================================== */
 .status-badge.confirmed { background: #E8F3E8; color: #1E5E20; }
 .status-badge.cancelled { background: #FBEAE9; color: #8C2E27; }
@@ -987,7 +987,7 @@ textarea.form-input { resize: vertical; min-height: 140px; }
 }
 
 /* ==========================================================================
-   Admin � Users management
+   Admin — Users management
    ========================================================================== */
 .scope-note strong { display: block; margin-bottom: 4px; }
 .user-card {
@@ -1022,7 +1022,7 @@ textarea.form-input { resize: vertical; min-height: 140px; }
 }
 
 /* ==========================================================================
-   Admin � Reviews management (badge renamed to .review-badge to avoid
+   Admin — Reviews management (badge renamed to .review-badge to avoid
    colliding with the existing .badge/.badge-type/.badge-success system
    already used on customer-facing pages)
    ========================================================================== */

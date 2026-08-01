@@ -109,7 +109,7 @@ function WriteReviewContent() {
         </div>
       ) : submitted ? (
         <div id="success-state" className="card-style">
-          <p>Thanks — your review has been posted.</p>
+          <p>Thanks â€” your review has been posted.</p>
           <Link href={detailHref} className="btn btn-terracotta">Back to Listing</Link>
         </div>
       ) : (
@@ -147,7 +147,7 @@ function WriteReviewContent() {
             </div>
 
             <button type="submit" className="btn btn-terracotta" disabled={submitting}>
-              {submitting ? "Submitting…" : "Submit Review"}
+              {submitting ? "Submittingâ€¦" : "Submit Review"}
             </button>
 
             {formMessage.text && (
