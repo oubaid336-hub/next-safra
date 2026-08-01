@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { getApiBaseUrl } from "@/lib/config";
 
@@ -8,246 +8,193 @@ function PaymentContent() {
   const searchParams = useSearchParams();
   const bookingId = searchParams.get("bookingId");
 
-  const [status, setStatus] = useState(bookingId ? "idle" : "noBooking");
-  const [summary, setSummary] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+  const [booking, setBooking] = useState(null);
   const [confirming, setConfirming] = useState(false);
+  const [confirmed, setConfirmed] = useState(false);
+  const [formMessage, setFormMessage] = useState({ text: "", type: "" });
+
+  const loadBooking = useCallback(async (id) => {
+    try {
+      const res = await fetch(`${getApiBaseUrl()}/api/bookings/${id}`, { credentials: "include" });
+
+      if (res.status === 401) {
+        const redirectTarget = encodeURIComponent(window.location.pathname + window.location.search);
+        window.location.href = `/login?redirect=${redirectTarget}`;
+        return;
+      }
+
+      if (!res.ok) {
+        setNotFound(true);
+        setLoading(false);
+        return;
+      }
+
+      const data = await res.json();
+      const b = data.booking || data;
+      setBooking(b);
+      if (b.status === "pending-cash-payment" || b.status === "confirmed") {
+        setConfirmed(true);
+      }
+      setLoading(false);
+    } catch (err) {
+      console.error("Failed to load booking:", err);
+      setNotFound(true);
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    if (!bookingId) return;
-    let cancelled = false;
-    const API = getApiBaseUrl();
-
-    async function loadBookingSummary() {
-      try {
-        const res = await fetch(`${API}/api/bookings/${bookingId}`, { credentials: "include" });
-        if (!res.ok) return;
-        const booking = await res.json();
-
-        const endpoint = booking.listingType === "car" ? "cars" : "houses";
-        const listingRes = await fetch(`${API}/api/${endpoint}/${booking.listingId}`, {
-          credentials: "include",
-        });
-        const listing = listingRes.ok ? await listingRes.json() : null;
-
-        const opts = { month: "short", day: "numeric", year: "numeric" };
-        const start = new Date(booking.startDate).toLocaleDateString(undefined, opts);
-        const end = new Date(booking.endDate).toLocaleDateString(undefined, opts);
-
-        if (cancelled) return;
-        setSummary({
-          title: listing?.title || "Your booking",
-          dates: `${start} \u2013 ${end}`,
-          price: `$${Number(booking.totalPrice).toFixed(2)} total`,
-        });
-      } catch (err) {
-        console.error("Could not load booking summary:", err);
-      }
+    if (!bookingId) {
+      setLoading(false);
+      setNotFound(true);
+      return;
     }
+    loadBooking(bookingId);
+  }, [bookingId, loadBooking]);
 
-    loadBookingSummary();
-    return () => {
-      cancelled = true;
-    };
-  }, [bookingId]);
+  function formatDate(d) {
+    if (!d) return "";
+    return new Date(d).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+  }
 
-  async function confirmBooking(method) {
-    if (method !== "arrival" || !bookingId) return;
+  function formatPrice(amount) {
+    const n = Number(amount) || 0;
+    return `$${n.toFixed(2)}`;
+  }
 
+  async function safeJson(res) {
+    try {
+      return await res.json();
+    } catch {
+      return {};
+    }
+  }
+
+  async function handleConfirmCash() {
+    if (!bookingId || confirming || confirmed) return;
     setConfirming(true);
-    const API = getApiBaseUrl();
+    setFormMessage({ text: "", type: "" });
 
     try {
-      const res = await fetch(`${API}/api/bookings/${bookingId}/confirm-cash`, {
+      const res = await fetch(`${getApiBaseUrl()}/api/bookings/${bookingId}/confirm-cash`, {
         method: "PATCH",
         credentials: "include",
       });
 
-      if (!res.ok) {
-        setConfirming(false);
-        alert("Something went wrong confirming your booking. Please try again.");
+      if (res.status === 401) {
+        const redirectTarget = encodeURIComponent(window.location.pathname + window.location.search);
+        window.location.href = `/login?redirect=${redirectTarget}`;
         return;
       }
 
-      setStatus("confirmed");
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      if (!res.ok) {
+        const data = await safeJson(res);
+        setFormMessage({ text: data.message || "Something went wrong confirming your booking. Please try again.", type: "error" });
+        return;
+      }
+
+      setConfirmed(true);
     } catch (err) {
+      console.error("Confirm-cash failed:", err);
+      setFormMessage({ text: "Could not reach the server. Please check your connection and try again.", type: "error" });
+    } finally {
       setConfirming(false);
-      alert("Could not reach the server. Please check your connection and try again.");
     }
   }
 
-  const showGridAndStrip = status === "idle";
-  const confirmTitle = status === "noBooking" ? "No booking found" : "Booking confirmed";
-  const confirmText =
-    status === "noBooking"
-      ? "We could not find a booking to pay for. Please start a new booking from a listing page."
-      : "We've reserved your booking. Bring cash to pay the full amount when you arrive \u2014 see you soon!";
+  const listingTitle = booking?.listing?.title || booking?.listingTitle || "Your booking";
+  const totalPrice = booking?.totalPrice ?? booking?.priceBreakdown?.total;
 
   return (
-    <>
-      <div className="pay-header">
-        <h1>Choose how to pay</h1>
-        <p>Choose how you&apos;d like to pay below â€” no hidden charges, ever. You&apos;ll get a confirmation once it&apos;s approved.</p>
-      </div>
+    <main className="payment-page">
+      <h1>Choose How You&apos;d Like to Pay</h1>
+      <p className="subtitle">You&apos;ll get a confirmation once it&apos;s approved.</p>
 
-      {summary && (
-        <div className="booking-summary">
-          <div className="summary-label">Booking summary</div>
-          <div className="summary-title">{summary.title}</div>
-          <div className="summary-row">
-            <span>{summary.dates}</span>
-            <span className="summary-price">{summary.price}</span>
-          </div>
+      {loading && <div id="loading-state">Loading booking details...</div>}
+
+      {!loading && notFound && (
+        <div id="not-found-state">
+          <p>We couldn&apos;t find that booking. It may have been removed or the link is incorrect.</p>
+          <a href="/my-bookings" className="btn btn-terracotta">My Bookings</a>
         </div>
       )}
 
-      {showGridAndStrip && (
-        <div className="trust-strip">
-          <span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            Secure &amp; encrypted
-          </span>
-          <span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            No hidden fees
-          </span>
-          <span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            Instant confirmation
-          </span>
-        </div>
-      )}
+      {!loading && !notFound && booking && (
+        <>
+          <section className="booking-summary card-style">
+            <h2>{listingTitle}</h2>
+            <p className="dates">
+              {formatDate(booking.startDate)} ? {formatDate(booking.endDate)}
+            </p>
+            {totalPrice != null && (
+              <p className="total">Total: {formatPrice(totalPrice)}</p>
+            )}
+          </section>
 
-      {showGridAndStrip && (
-        <div className="pay-grid">
-          <div className="pay-card recommended">
-            <div className="pay-badge">Available now</div>
-            <div className="pay-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          <section className="payment-options">
+            <div className="payment-option card-style">
+              <h3>Pay on arrival (cash)</h3>
+              <p>Reserve now, pay the full amount in cash when you arrive.</p>
+              {confirmed ? (
+                <p className="option-status success">Reservation requested — you&apos;ll get a confirmation once it&apos;s approved.</p>
+              ) : (
+                <button
+                  type="button"
+                  className="btn btn-terracotta"
+                  onClick={handleConfirmCash}
+                  disabled={confirming}
+                >
+                  {confirming ? "Confirming…" : "Reserve — Pay on Arrival"}
+                </button>
+              )}
+              {formMessage.text && (
+                <div id="form-message" className={`form-message ${formMessage.type}`}>{formMessage.text}</div>
+              )}
             </div>
-            <h3>Pay on arrival</h3>
-            <p>Reserve now, pay in cash when you check in or pick up. No card needed, no online payment required.</p>
-            <div className="price-note">100% due on arrival</div>
-            <button
-              type="button"
-              className="pay-btn primary"
-              onClick={() => confirmBooking("arrival")}
-              disabled={confirming}
-            >
-              {confirming ? "Confirming\u2026" : "Confirm booking"}
-            </button>
-          </div>
 
-          <div className="pay-card">
-            <div className="pay-badge soon">Coming soon</div>
-            <div className="pay-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            <div className="payment-option card-style disabled">
+              <h3>Pay 25% deposit by card</h3>
+              <p>Pay a deposit now, the rest on arrival.</p>
+              <span className="coming-soon">Coming soon</span>
             </div>
-            <h3>Pay 25% deposit</h3>
-            <p>Secure your booking with a small deposit by card now, pay the remaining 75% in cash on arrival.</p>
-            <div className="price-note">25% now, 75% on arrival</div>
-            <button type="button" className="pay-btn disabled" disabled>Coming soon</button>
-          </div>
 
-          <div className="pay-card">
-            <div className="pay-badge soon">Coming soon</div>
-            <div className="pay-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/><line x1="6" y1="15" x2="9" y2="15"/></svg>
+            <div className="payment-option card-style disabled">
+              <h3>Pay in full by card</h3>
+              <p>Pay the entire booking online now.</p>
+              <span className="coming-soon">Coming soon</span>
             </div>
-            <h3>Pay in full by card</h3>
-            <p>Pay your entire booking online by card in one step, secured by Stripe.</p>
-            <div className="price-note">100% now, securely by card</div>
-            <button type="button" className="pay-btn disabled" disabled>Coming soon</button>
-          </div>
-        </div>
-      )}
-
-      {!showGridAndStrip && (
-        <div className="pay-confirm show">
-          <div className="check">âœ“</div>
-          <h2>{confirmTitle}</h2>
-          <p>{confirmText}</p>
-        </div>
+          </section>
+        </>
       )}
 
       <style jsx>{`
-        .pay-header { margin-top: 24px; padding: 24px 0 8px; text-align: center; }
-        .pay-header h1 {
-          font-family: 'Playfair Display', serif; font-weight: 800; font-size: 2rem;
-          color: var(--safra-navy); margin-bottom: 8px;
-        }
-        .pay-header p { color: var(--safra-gray); max-width: 480px; margin: 0 auto; }
-
-        .booking-summary {
-          max-width: 560px; margin: 0 auto 32px; background: #fff; border-radius: 16px;
-          padding: 20px 24px; box-shadow: 0 6px 18px rgba(15,23,42,.08);
-        }
-        .summary-label { font-family: 'Inter', sans-serif; font-size: 13px; color: var(--safra-gray); margin-bottom: 4px; }
-        .summary-title {
-          font-family: 'Playfair Display', serif; font-weight: 700; color: var(--safra-navy);
-          font-size: 1.15rem; margin-bottom: 8px;
-        }
-        .summary-row {
-          font-family: 'Inter', sans-serif; font-size: 14px; color: var(--safra-gray);
-          display: flex; justify-content: space-between; margin-bottom: 4px;
-        }
-        .summary-price { font-weight: 700; color: var(--safra-terracotta); }
-
-        .trust-strip {
-          display: flex; flex-wrap: wrap; justify-content: center; gap: 24px;
-          padding: 20px 0 40px; color: var(--safra-gray); font-size: 13px;
-        }
-        .trust-strip span { display: flex; align-items: center; gap: 6px; }
-        .trust-strip svg { width: 16px; height: 16px; color: var(--safra-terracotta); flex-shrink: 0; }
-
-        .pay-grid { display: grid; grid-template-columns: 1fr; gap: 20px; padding-bottom: 80px; }
-        @media (min-width: 860px) { .pay-grid { grid-template-columns: repeat(3, 1fr); } }
-
-        .pay-card {
-          position: relative; background: #fff; border-radius: 18px; padding: 28px 24px;
-          box-shadow: 0 6px 18px rgba(15,23,42,.08); border: 2px solid transparent;
-          display: flex; flex-direction: column;
-        }
-        .pay-card.recommended { border-color: var(--safra-terracotta); }
-        .pay-badge {
-          position: absolute; top: -12px; left: 24px; background: var(--safra-terracotta); color: #fff;
-          font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
-          padding: 5px 12px; border-radius: 999px;
-        }
-        .pay-badge.soon { background: var(--safra-navy); }
-        .pay-icon {
-          width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
-          background: var(--safra-sandlight); color: var(--safra-navy); margin-bottom: 16px;
-        }
-        .pay-card h3 { font-family: 'Playfair Display', serif; font-weight: 700; color: var(--safra-navy); font-size: 1.2rem; margin-bottom: 8px; }
-        .pay-card p { color: var(--safra-gray); font-size: 14px; line-height: 1.5; margin-bottom: 20px; flex: 1; }
-        .pay-card .price-note { font-size: 13px; font-weight: 600; color: var(--safra-terracotta); margin-bottom: 16px; }
-        .pay-btn {
-          width: 100%; padding: 12px; border-radius: 10px; font-weight: 600; font-size: 14px;
-          text-align: center; cursor: pointer; border: none; font-family: 'Inter', sans-serif;
-        }
-        .pay-btn.primary { background: var(--safra-terracotta); color: #fff; }
-        .pay-btn.primary:hover { opacity: .92; }
-        .pay-btn.disabled { background: var(--safra-sandlight); color: var(--safra-graylight); cursor: not-allowed; }
-
-        .pay-confirm {
-          max-width: 560px; margin: 0 auto 80px; background: #fff; border-radius: 18px;
-          padding: 32px; text-align: center; box-shadow: 0 6px 18px rgba(15,23,42,.08);
-        }
-        .pay-confirm .check {
-          width: 56px; height: 56px; border-radius: 50%; background: var(--safra-terracotta); color: #fff;
-          font-size: 26px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;
-        }
-        .pay-confirm h2 { font-family: 'Playfair Display', serif; font-weight: 700; color: var(--safra-navy); font-size: 1.3rem; margin-bottom: 8px; }
-        .pay-confirm p { color: var(--safra-gray); font-size: 14px; }
+        .payment-page { max-width: 720px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+        .payment-page h1 { color: var(--safra-navy); }
+        .subtitle { opacity: 0.75; margin-top: -0.5rem; margin-bottom: 1.5rem; font-family: 'Inter', sans-serif; }
+        .booking-summary { margin-bottom: 1.5rem; }
+        .booking-summary h2 { font-family: 'Playfair Display', serif; color: var(--safra-navy); margin-bottom: 0.4rem; }
+        .booking-summary .dates { opacity: 0.75; font-family: 'Inter', sans-serif; }
+        .booking-summary .total { font-weight: 600; margin-top: 0.5rem; font-family: 'Inter', sans-serif; }
+        .payment-options { display: grid; gap: 1.25rem; }
+        .payment-option h3 { font-family: 'Playfair Display', serif; color: var(--safra-navy); margin-bottom: 0.4rem; }
+        .payment-option p { font-family: 'Inter', sans-serif; opacity: 0.8; margin-bottom: 0.75rem; }
+        .payment-option.disabled { opacity: 0.6; }
+        .coming-soon { display: inline-block; font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 600; padding: 0.3rem 0.7rem; border-radius: 999px; background: rgba(0,0,0,0.06); }
+        .option-status { font-family: 'Inter', sans-serif; font-weight: 600; }
+        .option-status.success { color: #1f6b3a; }
+        .form-message { margin-top: 1rem; padding: 0.85rem 1rem; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 0.95rem; }
+        .form-message.error { background: #fdeceb; color: #9c2b21; border: 1px solid #f3c2bd; }
+        #loading-state, #not-found-state { text-align: center; padding: 3rem 1rem; font-family: 'Inter', sans-serif; opacity: 0.75; }
       `}</style>
-    </>
+    </main>
   );
 }
 
 export default function PaymentPage() {
   return (
-    <Suspense fallback={<div className="pay-header"><p>Loading...</p></div>}>
+    <Suspense fallback={<div id="loading-state">Loading booking details...</div>}>
       <PaymentContent />
     </Suspense>
   );
