@@ -33,12 +33,11 @@ export default function CarDetailPage() {
 
     async function load() {
       try {
-        const res = await fetch(`${API}/api/cars/${id}`, { credentials: "include" });
+        const res = await fetch(`${API}/api/cars/${id}`);
         if (!res.ok) throw new Error(`Server responded with ${res.status}`);
         const data = await res.json();
         if (cancelled) return;
-        const carData = data.car || data;
-        setCar(carData);
+        setCar(data);
         setLoading(false);
       } catch (err) {
         console.error("Failed to load car:", err);
@@ -131,7 +130,6 @@ export default function CarDetailPage() {
   }
 
   const photos = car?.photos || [];
-  const pricePerDay = car ? Number(car.pricePerDay ?? car.pricePerNight) || 0 : 0;
 
   return (
     <main className="car-detail-page">
@@ -173,7 +171,7 @@ export default function CarDetailPage() {
                   <button
                     type="button"
                     key={i}
-                    className={`gallery-thumb${i === activePhoto ? " is-active" : ""}`}
+                    className={`gallery-thumb${i === activePhoto ? "is-active" : ""}`}
                     onClick={() => setActivePhoto(i)}
                   >
                     <img src={p} alt="" loading="lazy" />
@@ -186,8 +184,8 @@ export default function CarDetailPage() {
           <div className="car-body">
             <div className="car-header">
               <h1>{car.title}</h1>
-              <span className="car-price">
-                ${pricePerDay.toFixed(2)}
+              <span className="booking-price">
+                ${car.pricePerDay}
                 <span> / day</span>
               </span>
             </div>
@@ -204,15 +202,19 @@ export default function CarDetailPage() {
                 <div className="value">{car.transmission ?? "-"}</div>
               </div>
               <div className="spec-item">
+                <div className="label">Fuel Type</div>
+                <div className="value">{car.fuelType ?? "-"}</div>
+              </div>
+              <div className="spec-item">
                 <div className="label">Year</div>
                 <div className="value">{car.year ?? "-"}</div>
               </div>
             </div>
 
-            <p className="car-description">{car.description || ""}</p>
+            <p className="detail-desc">{car.description || ""}</p>
 
             <div className="car-actions">
-              <Link href={`/booking?carId=${car._id}`} id="bookCarBtn">Book This Car</Link>
+              <Link href={`/booking?carId=${car._id}`} id="bookNowBtn">Book This Car</Link>
               {wishlistVisible && (
                 <button type="button" id="wishlistBtn" onClick={toggleWishlist} disabled={wishlistBusy}>
                   {wishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
@@ -232,7 +234,7 @@ export default function CarDetailPage() {
               </div>
               <div id="reviewsList">
                 {reviewsLoading ? (
-                  <p className="no-reviews">Loading reviewsâ€¦</p>
+                  <p className="no-reviews">Loading reviews…</p>
                 ) : reviewsError ? (
                   <p className="no-reviews">Could not load reviews.</p>
                 ) : reviews.length === 0 ? (
@@ -344,7 +346,7 @@ export default function CarDetailPage() {
           line-height: 1.2;
         }
 
-        .car-price {
+        .booking-price {
           font-family: 'Playfair Display', serif;
           font-weight: 800;
           font-size: 1.6rem;
@@ -354,7 +356,7 @@ export default function CarDetailPage() {
           background: rgba(196, 92, 62, 0.08);
           border-radius: 12px;
         }
-        .car-price span { font-family: 'Inter', sans-serif; font-weight: 500; font-size: 13px; }
+        .booking-price span { font-family: 'Inter', sans-serif; font-weight: 500; font-size: 13px; }
 
         .car-location {
           display: flex;
@@ -373,7 +375,7 @@ export default function CarDetailPage() {
           height: 16px;
           flex-shrink: 0;
           background-color: var(--safra-terracotta);
-          -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>') no-repeat center / contain;
+          -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0 118 0z"/><circle cx="12" cy="10" r="3"/></svg>') no-repeat center / contain;
           mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>') no-repeat center / contain;
         }
 
@@ -396,9 +398,9 @@ export default function CarDetailPage() {
           font-size: 11px; font-weight: 600; color: var(--safra-gray);
           text-transform: uppercase; letter-spacing: 0.04em;
         }
-        .spec-item .value { font-size: 1.1rem; font-weight: 700; color: var(--safra-navy); margin-top: 4px; text-transform: capitalize; }
+        .spec-item .value { font-size: 1.1rem; font-weight: 700; color: var(--safra-navy); margin-top: 4px; }
 
-        .car-description {
+        .detail-desc {
           font-family: 'Inter', sans-serif;
           line-height: 1.8;
           color: var(--safra-gray);
@@ -411,14 +413,14 @@ export default function CarDetailPage() {
 
         .car-actions { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
 
-        #bookCarBtn {
+        #bookNowBtn {
           flex: 1; min-width: 200px; display: inline-flex; align-items: center; justify-content: center;
           background: linear-gradient(135deg, var(--safra-terracotta), var(--safra-terracottalight));
           color: #fff; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 15px;
           padding: 16px 32px; border-radius: 12px; text-decoration: none;
           box-shadow: 0 8px 20px rgba(196, 92, 62, .3); transition: all .25s ease;
         }
-        #bookCarBtn:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(196, 92, 62, .4); }
+        #bookNowBtn:hover { transform: translateY(-2px); box-shadow:0 12px 28px rgba(196, 92, 62, .4); }
 
         #wishlistBtn {
           flex: 1; min-width: 200px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
@@ -444,8 +446,8 @@ export default function CarDetailPage() {
         .review-card:last-child { margin-bottom: 0; }
         .review-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .review-name { font-family: 'Playfair Display', serif; font-weight: 700; color: var(--safra-navy); font-size: 15px; }
-        .review-stars { color: var(--safra-yellow); font-size: 14px; letter-spacing: 2px; }
-        .review-comment { font-size: 14px; color: var(--safra-gray); line-height: 1.6; }
+        .review-stars { color: var(--safra-yellow); font-size: 14px;letter-spacing: 2px; }
+        .review-comment { font-size: 14px; color: var(--safra-gray);line-height: 1.6; }
         .no-reviews {
           color: var(--safra-gray); font-size: 14px; padding: 20px; text-align: center;
           background: var(--safra-sandlight); border-radius: 12px;
@@ -461,7 +463,7 @@ export default function CarDetailPage() {
           .car-detail-page { padding: 16px 12px 60px; }
           .car-body { padding: 24px 20px 32px; }
           .car-header h1 { font-size: 1.6rem; }
-          .car-price { font-size: 1.3rem; }
+          .booking-price { font-size: 1.3rem; }
           .car-actions { flex-direction: column; }
         }
       `}</style>
