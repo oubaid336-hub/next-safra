@@ -854,3 +854,20 @@ textarea.form-input { resize: vertical; min-height: 140px; }
 .newsletter-msg.show.error { display: block; background: #FEE2E2; color: #991B1B; border: 1px solid #FECACA; }
 @media (max-width: 600px) { .newsletter-form { flex-direction: column; } }
 .featured-loading .skeleton-card { min-height: 260px; }
+
+/* ==========================================================================
+   Admin auth
+   ========================================================================== */
+.admin-page {
+  min-height: 100vh;
+  background: var(--safra-navy);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.admin-page .auth-card {
+  max-width: 380px;
+}
+.admin-page .auth-card h1 { font-size: 1.5rem; }
+.admin-page .auth-card .subtitle { margin-bottom: 24px; }
