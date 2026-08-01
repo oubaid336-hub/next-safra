@@ -908,3 +908,48 @@ textarea.form-input { resize: vertical; min-height: 140px; }
 .stat-card.nested { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 24px; }
 .stat-card.nested .stat-label.group-label { width: 100%; font-weight: 700; color: var(--safra-navy); font-size: 14px; margin-bottom: 4px; }
 #loadingMsg, #emptyMsg { color: #8A8377; font-size: 14px; }
+
+/* ==========================================================================
+   Admin — Houses & Cars management (renamed from vanilla's .listing-card/
+   .listing-thumb/.section-title to avoid collision with the customer-facing
+   classes of the same name already defined above)
+   ========================================================================== */
+.scope-note {
+  background: #FDF6E9; border: 1px solid #EFE0B8; color: #6B5A22;
+  font-size: 13px; padding: 12px 16px; border-radius: 10px; margin-bottom: 28px;
+}
+.admin-section-title {
+  font-family: 'Playfair Display', serif; font-size: 19px; color: var(--safra-navy);
+  margin: 32px 0 14px;
+}
+.admin-section-title.first { margin-top: 0; }
+.admin-listing-card {
+  background: #fff; border-radius: 14px; padding: 18px 20px; margin-bottom: 12px;
+  display: flex; gap: 16px; align-items: center; box-shadow: 0 2px 10px rgba(27,42,65,.05);
+}
+.admin-listing-thumb {
+  width: 72px; height: 72px; border-radius: 10px; background: #EDE7D9; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; color: #B3A98C;
+  font-size: 11px; text-align: center; overflow: hidden;
+}
+.admin-listing-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.admin-listing-info { flex: 1; min-width: 0; }
+.admin-listing-info .title { font-weight: 700; color: var(--safra-navy); font-size: 15px; margin-bottom: 3px; }
+.admin-listing-info .meta { font-size: 13px; color: #8A8377; }
+.status-badge { font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px; text-transform: capitalize; white-space: nowrap; }
+.status-badge.pending { background: #FDF1DC; color: #92620C; }
+.status-badge.approved { background: #E8F3E8; color: #1E5E20; }
+.status-badge.rejected { background: #FBEAE9; color: #8C2E27; }
+.listing-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.listing-actions button {
+  font-size: 12px; font-weight: 600; padding: 8px 14px; border-radius: 8px;
+  border: 1px solid #DDD5C8; background: #fff; cursor: pointer;
+}
+.listing-actions button.approve-btn:hover { background: #E8F3E8; border-color: #B7DDB8; }
+.listing-actions button.reject-btn:hover { background: #FBEAE9; border-color: #F0C4C0; }
+.listing-actions button:disabled { opacity: .5; cursor: not-allowed; }
+.empty-msg { color: #8A8377; font-size: 14px; }
+@media (max-width: 600px) {
+  .admin-listing-card { flex-wrap: wrap; }
+  .listing-actions { width: 100%; justify-content: flex-end; }
+}
