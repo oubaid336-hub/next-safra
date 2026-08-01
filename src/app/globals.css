@@ -953,3 +953,35 @@ textarea.form-input { resize: vertical; min-height: 140px; }
   .admin-listing-card { flex-wrap: wrap; }
   .listing-actions { width: 100%; justify-content: flex-end; }
 }
+
+/* ==========================================================================
+   Admin — Bookings management
+   ========================================================================== */
+.status-badge.confirmed { background: #E8F3E8; color: #1E5E20; }
+.status-badge.cancelled { background: #FBEAE9; color: #8C2E27; }
+.booking-card {
+  background: #fff; border-radius: 14px; padding: 18px 20px; margin-bottom: 12px;
+  display: flex; gap: 16px; align-items: center; box-shadow: 0 2px 10px rgba(27,42,65,.05);
+}
+.booking-info { flex: 1; min-width: 0; }
+.booking-info .title { font-weight: 700; color: var(--safra-navy); font-size: 15px; margin-bottom: 3px; }
+.booking-info .title .type-tag {
+  display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .03em; color: var(--safra-terracotta); background: #FBEFE9;
+  padding: 2px 7px; border-radius: 999px; margin-left: 8px; vertical-align: middle;
+}
+.booking-info .meta { font-size: 13px; color: #8A8377; margin-bottom: 2px; }
+.booking-info .booked-on { font-size: 12px; color: #B3A98C; }
+.booking-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.booking-actions button {
+  font-size: 12px; font-weight: 600; padding: 8px 14px; border-radius: 8px;
+  border: 1px solid #DDD5C8; background: #fff; cursor: pointer;
+}
+.booking-actions button.confirm-btn:hover { background: #E8F3E8; border-color: #B7DDB8; }
+.booking-actions button.cancel-btn { color: #8C2E27; border-color: #F0C4C0; }
+.booking-actions button.cancel-btn:hover { background: #FBEAE9; }
+.booking-actions button:disabled { opacity: .5; cursor: not-allowed; }
+@media (max-width: 600px) {
+  .booking-card { flex-wrap: wrap; }
+  .booking-actions { width: 100%; justify-content: flex-end; }
+}
