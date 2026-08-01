@@ -11,6 +11,7 @@ function PaymentContent() {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [booking, setBooking] = useState(null);
+  const [listing, setListing] = useState(null);
   const [confirming, setConfirming] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
   const [formMessage, setFormMessage] = useState({ text: "", type: "" });
@@ -31,12 +32,19 @@ function PaymentContent() {
         return;
       }
 
-      const data = await res.json();
-      const b = data.booking || data;
+      const b = await res.json();
       setBooking(b);
       if (b.status === "pending-cash-payment" || b.status === "confirmed") {
         setConfirmed(true);
       }
+
+      const listingPath = b.listingType === "house" ? "houses" : "cars";
+      const listingRes = await fetch(`${getApiBaseUrl()}/api/${listingPath}/${b.listingId}`, { credentials: "include" });
+      if (listingRes.ok) {
+        const listingData = await listingRes.json();
+        setListing(listingData.house || listingData.car || listingData);
+      }
+
       setLoading(false);
     } catch (err) {
       console.error("Failed to load booking:", err);
@@ -89,6 +97,11 @@ function PaymentContent() {
         return;
       }
 
+      if (res.status === 409) {
+        setConfirmed(true);
+        return;
+      }
+
       if (!res.ok) {
         const data = await safeJson(res);
         setFormMessage({ text: data.message || "Something went wrong confirming your booking. Please try again.", type: "error" });
@@ -104,8 +117,8 @@ function PaymentContent() {
     }
   }
 
-  const listingTitle = booking?.listing?.title || booking?.listingTitle || "Your booking";
-  const totalPrice = booking?.totalPrice ?? booking?.priceBreakdown?.total;
+  const listingTitle = listing?.title || "Your booking";
+  const totalPrice = booking?.totalPrice;
 
   return (
     <main className="payment-page">
@@ -129,7 +142,10 @@ function PaymentContent() {
               {formatDate(booking.startDate)} ? {formatDate(booking.endDate)}
             </p>
             {totalPrice != null && (
-              <p className="total">Total: {formatPrice(totalPrice)}</p>
+              <p className="total">
+                Total: {formatPrice(totalPrice)}
+                {booking.promoApplied && <span className="promo-badge"> (10% promo applied)</span>}
+              </p>
             )}
           </section>
 
@@ -177,6 +193,7 @@ function PaymentContent() {
         .booking-summary h2 { font-family: 'Playfair Display', serif; color: var(--safra-navy); margin-bottom: 0.4rem; }
         .booking-summary .dates { opacity: 0.75; font-family: 'Inter', sans-serif; }
         .booking-summary .total { font-weight: 600; margin-top: 0.5rem; font-family: 'Inter', sans-serif; }
+        .promo-badge { font-weight: 400; opacity: 0.7; font-size: 0.85rem; }
         .payment-options { display: grid; gap: 1.25rem; }
         .payment-option h3 { font-family: 'Playfair Display', serif; color: var(--safra-navy); margin-bottom: 0.4rem; }
         .payment-option p { font-family: 'Inter', sans-serif; opacity: 0.8; margin-bottom: 0.75rem; }
