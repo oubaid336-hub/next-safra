@@ -985,3 +985,38 @@ textarea.form-input { resize: vertical; min-height: 140px; }
   .booking-card { flex-wrap: wrap; }
   .booking-actions { width: 100%; justify-content: flex-end; }
 }
+
+/* ==========================================================================
+   Admin — Users management
+   ========================================================================== */
+.scope-note strong { display: block; margin-bottom: 4px; }
+.user-card {
+  background: #fff; border-radius: 14px; padding: 18px 20px; margin-bottom: 12px;
+  display: flex; gap: 16px; align-items: center; box-shadow: 0 2px 10px rgba(27,42,65,.05);
+}
+.user-info { flex: 1; min-width: 0; }
+.user-info .name-line { font-weight: 700; color: var(--safra-navy); font-size: 15px; margin-bottom: 3px; }
+.user-info .meta { font-size: 13px; color: #8A8377; }
+.tag-row { display: flex; gap: 6px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
+.tag { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 999px; text-transform: capitalize; white-space: nowrap; }
+.tag.role-admin { background: #E4E8F0; color: var(--safra-navy); }
+.tag.role-customer { background: #F1EEE4; color: #6B6558; }
+.tag.status-active { background: #E8F3E8; color: #1E5E20; }
+.tag.status-blocked { background: #FBEAE9; color: #8C2E27; }
+.tag.unverified { background: #FDF1DC; color: #92620C; }
+.tag.self-tag { background: #EDE7D9; color: #6B6558; }
+.user-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.user-actions button {
+  font-size: 12px; font-weight: 600; padding: 8px 14px; border-radius: 8px;
+  border: 1px solid #DDD5C8; background: #fff; cursor: pointer;
+}
+.user-actions button.block-btn:hover { background: #FBEAE9; border-color: #F0C4C0; }
+.user-actions button.unblock-btn:hover { background: #E8F3E8; border-color: #B7DDB8; }
+.user-actions button.delete-btn { color: #8C2E27; border-color: #F0C4C0; }
+.user-actions button.delete-btn:hover { background: #FBEAE9; }
+.user-actions button:disabled { opacity: .5; cursor: not-allowed; }
+@media (max-width: 700px) {
+  .user-card { flex-wrap: wrap; }
+  .tag-row { width: 100%; justify-content: flex-start; order: 3; }
+  .user-actions { width: 100%; justify-content: flex-end; order: 4; }
+}
