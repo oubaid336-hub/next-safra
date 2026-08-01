@@ -27,6 +27,7 @@ function BookingContent() {
 
   useEffect(() => {
     if (!id || !listingType) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLoading(false);
       setNotFound(true);
       return;
@@ -92,6 +93,7 @@ function BookingContent() {
 
   useEffect(() => {
     if (!startDate || !endDate || !listing) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setDateWarning("");
       return;
     }
@@ -159,7 +161,7 @@ function BookingContent() {
 
       if (res.status === 401) {
         const redirectTarget = encodeURIComponent(window.location.pathname + window.location.search);
-        window.location.href = `/login?redirect=${redirectTarget}`;
+        window.location.assign(`/login?redirect=${redirectTarget}`);
         return;
       }
 
@@ -198,7 +200,7 @@ function BookingContent() {
 
       const booking = await safeJson(res);
       if (booking && booking._id) {
-        window.location.href = `/payment?bookingId=${booking._id}`;
+        window.location.assign(`/payment?bookingId=${booking._id}`);
         return;
       }
       setFormMessage({
@@ -238,7 +240,7 @@ function BookingContent() {
 
       {!loading && (notFound || !listing) && (
         <div id="notFoundState">
-          <p>We couldn't find that listing. It may have been removed or the link is incorrect.</p>
+          <p>We couldn&apos;t find that listing. It may have been removed or the link is incorrect.</p>
           <a href={browseHref} className="btn btn-terracotta">{browseLabel}</a>
         </div>
       )}
@@ -307,7 +309,7 @@ function BookingContent() {
               )}
 
               <button type="submit" className="btn btn-terracotta" id="submitBtn" disabled={submitting}>
-                {submitting ? "Submitting…" : "Request Booking"}
+                {submitting ? "Submittingâ€¦" : "Request Booking"}
               </button>
 
               {formMessage && <div className={`form-message ${formMessage.type}`}>{formMessage.text}</div>}

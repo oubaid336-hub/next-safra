@@ -9,7 +9,7 @@ export default function CarDetailPage() {
   const params = useParams();
   const id = params.id;
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!!id);
   const [error, setError] = useState(false);
   const [car, setCar] = useState(null);
   const [activePhoto, setActivePhoto] = useState(0);
@@ -23,11 +23,7 @@ export default function CarDetailPage() {
   const [wishlistBusy, setWishlistBusy] = useState(false);
 
   useEffect(() => {
-    if (!id) {
-      setLoading(false);
-      setError(true);
-      return;
-    }
+    if (!id) return;
     let cancelled = false;
     const API = getApiBaseUrl();
 
@@ -140,7 +136,7 @@ export default function CarDetailPage() {
 
       {loading && <div id="loadingState">Loading car details...</div>}
 
-      {!loading && (error || !car) && (
+      {!loading && (error || !id || !car) && (
         <div id="errorState" style={{ display: "block" }}>
           <h2>Listing not found</h2>
           <p>This car may have been removed or the link is incorrect.</p>
@@ -234,7 +230,7 @@ export default function CarDetailPage() {
               </div>
               <div id="reviewsList">
                 {reviewsLoading ? (
-                  <p className="no-reviews">Loading reviews…</p>
+                  <p className="no-reviews">Loading reviewsÃ¢â‚¬Â¦</p>
                 ) : reviewsError ? (
                   <p className="no-reviews">Could not load reviews.</p>
                 ) : reviews.length === 0 ? (

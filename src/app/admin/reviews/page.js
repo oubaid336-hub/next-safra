@@ -38,6 +38,7 @@ export default function AdminReviewsPage() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadReviews();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

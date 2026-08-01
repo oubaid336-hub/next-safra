@@ -25,6 +25,7 @@ export default function HouseDetailPage() {
 
   useEffect(() => {
     if (!id) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLoading(false);
       setError(true);
       return;

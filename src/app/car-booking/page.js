@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { Suspense, useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { getApiBaseUrl } from "@/lib/config";
@@ -50,6 +52,7 @@ function CarBookingContent() {
 
   useEffect(() => {
     if (!carId) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLoading(false);
       setNotFound(true);
       return;
@@ -201,7 +204,7 @@ function CarBookingContent() {
       {!loading && notFound && (
         <div id="not-found-state" style={{ display: "block" }}>
           <p>We couldn&apos;t find that listing. It may have been removed or the link is incorrect.</p>
-          <a href="/cars" className="btn btn-terracotta">Browse Cars</a>
+          <Link href="/cars" className="btn btn-terracotta">Browse Cars</Link>
         </div>
       )}
 
@@ -214,7 +217,7 @@ function CarBookingContent() {
             <p className="specs" id="car-specs">
               {[car.seats ? `${car.seats} seats` : null, car.transmission || null, car.year || null]
                 .filter(Boolean)
-                .join(" · ")}
+                .join(" Â· ")}
             </p>
             <p id="car-description">{car.description || ""}</p>
           </section>
@@ -252,7 +255,7 @@ function CarBookingContent() {
               )}
 
               <button type="submit" className="btn btn-terracotta" id="submit-btn" disabled={submitting}>
-                {submitting ? "Submitting…" : "Request Booking"}
+                {submitting ? "Submittingâ€¦" : "Request Booking"}
               </button>
 
               {formMessage.text && (

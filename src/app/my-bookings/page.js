@@ -75,6 +75,7 @@ export default function MyBookingsPage() {
   }, [router, loadListingsFor]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadBookings();
   }, [loadBookings]);
 

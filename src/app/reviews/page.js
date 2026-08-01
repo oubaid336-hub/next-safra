@@ -34,6 +34,7 @@ function WriteReviewContent() {
   }, [listingId, listingType, invalidParams]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadListing();
   }, [loadListing]);
 

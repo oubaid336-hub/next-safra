@@ -55,6 +55,7 @@ function PaymentContent() {
 
   useEffect(() => {
     if (!bookingId) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLoading(false);
       setNotFound(true);
       return;

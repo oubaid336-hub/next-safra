@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -49,6 +49,7 @@ export default function AdminFaqManagerPage() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadFaqs();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

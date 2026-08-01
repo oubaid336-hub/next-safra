@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -38,6 +38,7 @@ export default function AdminContactMessagesPage() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadMessages();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

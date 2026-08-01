@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import { getApiBaseUrl } from "@/lib/config";
@@ -50,6 +50,7 @@ export default function AdminFeaturedPage() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     load();
   }, []);
 
@@ -77,7 +78,7 @@ export default function AdminFeaturedPage() {
   return (
     <>
       <h1>Featured Listings</h1>
-      <p className="sub">Choose what shows in the homepage's Featured section.</p>
+      <p className="sub">Choose what shows in the homepage&apos;s Featured section.</p>
 
       <div className="toolbar">
         <input
@@ -100,7 +101,7 @@ export default function AdminFeaturedPage() {
         <>
           <div className="picker-section">
             <h2>Houses</h2>
-            <p className="hint">Pick any number — only the first 2 will show on the homepage.</p>
+            <p className="hint">Pick any number â€” only the first 2 will show on the homepage.</p>
             <div id="houseList">
               {filteredHouses.map((h) => (
                 <label key={h._id}>
@@ -122,7 +123,7 @@ export default function AdminFeaturedPage() {
 
           <div className="picker-section">
             <h2>Cars</h2>
-            <p className="hint">Pick any number — only the first 1 will show on the homepage.</p>
+            <p className="hint">Pick any number â€” only the first 1 will show on the homepage.</p>
             <div id="carList">
               {filteredCars.map((c) => (
                 <label key={c._id}>
