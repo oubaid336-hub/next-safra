@@ -51,7 +51,7 @@ export default function Navbar() {
   if (pathname.startsWith("/admin")) return null;
 
   return (
-    <nav className={`navbar${(scrolled || alwaysSolid) ? " scrolled" : ""}`} id="navbar">
+    <nav className={`navbar${(scrolled || alwaysSolid) ? " scrolled" :""}`} id="navbar">
       <div className="container nav-inner">
         <Link href="/" className="nav-logo">
           <div className="nav-logo-badge"><span>S</span></div>
@@ -60,23 +60,23 @@ export default function Navbar() {
 
         <div className="nav-links">
           <Link href="/" className={`nav-link${isActive("/") ? " active" : ""}`}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-9"/><path d="M9 20v-5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v5"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-9"/><path d="M9 20v-5a1 1 0 0 1 1-1h4a1 1 0 0 1 11v5"/></svg>
             Home
           </Link>
           <Link href="/houses" className={`nav-link${isActive("/houses") ? " active" : ""}`}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 21V9l8-6 8 6v12"/><path d="M9 21v-7h6v7"/></svg>
             Houses
           </Link>
-          <Link href="/cars" className={`nav-link${isActive("/cars") ? " active" : ""}`}>
+          <Link href="/cars" className={`nav-link${isActive("/cars") ?" active" : ""}`}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 13.5 4.5 8A2 2 0 0 1 6.4 6.5h11.2A2 2 0 0 1 19.5 8L21 13.5"/><path d="M3 13.5h18V17a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-1H6v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-3.5Z"/><circle cx="7.5" cy="17" r="1.4"/><circle cx="16.5" cy="17" r="1.4"/></svg>
             Cars
           </Link>
-          <Link href="/faq" className={`nav-link${isActive("/faq") ? " active" : ""}`}>
+          <Link href="/faq" className={`nav-link${isActive("/faq") ? "active" : ""}`}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
             FAQ
           </Link>
           <Link href="/contact" className={`nav-link${isActive("/contact") ? " active" : ""}`}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a22 0 0 1 2 2z"/></svg>
             Contact
           </Link>
         </div>
@@ -92,7 +92,7 @@ export default function Navbar() {
                 <span className="nav-user-name">{user.name}</span>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
               </button>
-              <div className={`nav-user-menu${userMenuOpen ? " open" : ""}`}>
+              <div className={`nav-user-menu${userMenuOpen ? " open" :""}`}>
                 <Link href="/wishlist">Wishlist</Link>
                 <Link href="/my-bookings">My Bookings</Link>
                 <a href="#" onClick={handleLogout}>Log out</a>
@@ -120,23 +120,23 @@ export default function Navbar() {
 
       <div className="container">
         <div className={`mobile-menu${menuOpen ? " open" : ""}`}>
-          <Link href="/">Home</Link>
-          <Link href="/houses">Houses</Link>
-          <Link href="/cars">Cars</Link>
-          <Link href="/faq">FAQ</Link>
-          <Link href="/contact">Contact</Link>
+          {user && <div className="mobile-menu-user">{user.name}</div>}
+          <Link href="/" onClick={() => setMenuOpen(false)}>Home</Link>
+          <Link href="/houses" onClick={() => setMenuOpen(false)}>Houses</Link>
+          <Link href="/cars" onClick={() => setMenuOpen(false)}>Cars</Link>
+          <Link href="/faq" onClick={() => setMenuOpen(false)}>FAQ</Link>
+          <Link href="/contact" onClick={() => setMenuOpen(false)}>Contact</Link>
           <div className="divider"></div>
           {user ? (
             <>
-              <div className="mobile-menu-user">{user.name}</div>
-              <Link href="/wishlist">Wishlist</Link>
-              <Link href="/my-bookings">My Bookings</Link>
-              <a href="#" onClick={handleLogout}>Log out</a>
+              <Link href="/wishlist" onClick={() => setMenuOpen(false)}>Wishlist</Link>
+              <Link href="/my-bookings" onClick={() => setMenuOpen(false)}>My Bookings</Link>
+              <a href="#" onClick={(e) => { setMenuOpen(false); handleLogout(e); }}>Log out</a>
             </>
           ) : (
             <>
-              <Link href="/login">Login</Link>
-              <Link href="/signup">Sign Up</Link>
+              <Link href="/login" onClick={() => setMenuOpen(false)}>Login</Link>
+              <Link href="/signup" onClick={() => setMenuOpen(false)}>Sign Up</Link>
             </>
           )}
         </div>
