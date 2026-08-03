@@ -15,7 +15,8 @@ export default function HousesPage() {
   const [error, setError] = useState(false);
 
   const [locationFilter, setLocationFilter] = useState("");
-  const [minGuests, setMinGuests] = useState("");
+  const [maxGuests, setMaxGuests] = useState("");
+  const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
 
   useEffect(() => {
@@ -23,7 +24,7 @@ export default function HousesPage() {
 
     async function loadMyWishlist() {
       try {
-        const meRes = await fetch(`${API}/api/auth/me`, { credentials: "include" });
+        const meRes = await fetch(`${API}/api/auth/me`, { credentials:"include" });
         if (!meRes.ok) return [];
         const wishRes = await fetch(`${API}/api/wishlist`, { credentials: "include" });
         if (!wishRes.ok) return [];
@@ -87,16 +88,18 @@ export default function HousesPage() {
 
   const filteredHouses = useMemo(() => {
     const loc = locationFilter.trim().toLowerCase();
-    const minG = parseFloat(minGuests);
+    const maxG = parseFloat(maxGuests);
+    const minP = parseFloat(minPrice);
     const maxP = parseFloat(maxPrice);
 
     return allHouses.filter((h) => {
       const matchesLocation = !loc || (h.location || "").toLowerCase().includes(loc);
-      const matchesMinGuests = isNaN(minG) || (h.capacity || 0) >= minG;
+      const matchesMaxGuests = isNaN(maxG) || (h.capacity || 0) <= maxG;
+      const matchesMinPrice = isNaN(minP) || h.pricePerNight >= minP;
       const matchesMaxPrice = isNaN(maxP) || h.pricePerNight <= maxP;
-      return matchesLocation && matchesMinGuests && matchesMaxPrice;
+      return matchesLocation && matchesMaxGuests && matchesMinPrice && matchesMaxPrice;
     });
-  }, [allHouses, locationFilter, minGuests, maxPrice]);
+  }, [allHouses, locationFilter, maxGuests, minPrice, maxPrice]);
 
   const toggleWishlist = async (id) => {
     const API = getApiBaseUrl();
@@ -137,9 +140,16 @@ export default function HousesPage() {
           <input
             className="form-input"
             type="number"
-            placeholder="Min guests"
-            value={minGuests}
-            onChange={(e) => setMinGuests(e.target.value)}
+            placeholder="Max guests"
+            value={maxGuests}
+            onChange={(e) => setMaxGuests(e.target.value)}
+          />
+          <input
+            className="form-input"
+            type="number"
+            placeholder="Min $/night"
+            value={minPrice}
+            onChange={(e) => setMinPrice(e.target.value)}
           />
           <input
             className="form-input"
@@ -172,14 +182,14 @@ export default function HousesPage() {
               const rating = ratingSummary[String(house._id)];
               const count = bookingCounts[String(house._id)] ?? 0;
               const isNew = count <= 2;
-              const discountedPrice = Math.round(house.pricePerNight * 0.9);
+              const discountedPrice = Math.round(house.pricePerNight *0.9);
               const isActive = wishlist.includes(String(house._id));
 
               return (
                 <div className="listing-card-wrap" style={{ position: "relative" }} key={house._id}>
                   <button
                     type="button"
-                    className={`card-wishlist${isActive ? " is-active" : ""}`}
+                    className={`card-wishlist${isActive ? " is-active": ""}`}
                     aria-label="Toggle wishlist"
                     onClick={(e) => { e.preventDefault(); toggleWishlist(house._id); }}
                   >
@@ -218,7 +228,7 @@ export default function HousesPage() {
                         {house.capacity ? (
                           <span className="listing-meta-item">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 00 0-4 4v2" />
                               <circle cx="9" cy="7" r="4" />
                               <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
                               <path d="M16 3.13a4 4 0 0 1 0 7.75" />

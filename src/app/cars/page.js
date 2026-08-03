@@ -15,6 +15,7 @@ export default function CarsPage() {
 
   const [locationFilter, setLocationFilter] = useState("");
   const [transmission, setTransmission] = useState("");
+  const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
 
   useEffect(() => {
@@ -22,7 +23,7 @@ export default function CarsPage() {
 
     async function loadMyWishlist() {
       try {
-        const meRes = await fetch(`${API}/api/auth/me`, { credentials: "include" });
+        const meRes = await fetch(`${API}/api/auth/me`, { credentials:"include" });
         if (!meRes.ok) return [];
         const wishRes = await fetch(`${API}/api/wishlist`, { credentials: "include" });
         if (!wishRes.ok) return [];
@@ -71,15 +72,17 @@ export default function CarsPage() {
 
   const filteredCars = useMemo(() => {
     const loc = locationFilter.trim().toLowerCase();
+    const minP = parseFloat(minPrice);
     const maxP = parseFloat(maxPrice);
 
     return allCars.filter((c) => {
       const matchesLocation = !loc || (c.location || "").toLowerCase().includes(loc);
       const matchesTransmission = !transmission || c.transmission === transmission;
+      const matchesMinPrice = isNaN(minP) || c.pricePerDay >= minP;
       const matchesMaxPrice = isNaN(maxP) || c.pricePerDay <= maxP;
-      return matchesLocation && matchesTransmission && matchesMaxPrice;
+      return matchesLocation && matchesTransmission && matchesMinPrice && matchesMaxPrice;
     });
-  }, [allCars, locationFilter, transmission, maxPrice]);
+  }, [allCars, locationFilter, transmission, minPrice, maxPrice]);
 
   const toggleWishlist = async (id) => {
     const API = getApiBaseUrl();
@@ -129,6 +132,13 @@ export default function CarsPage() {
           <input
             className="form-input"
             type="number"
+            placeholder="Min $/day"
+            value={minPrice}
+            onChange={(e) => setMinPrice(e.target.value)}
+          />
+          <input
+            className="form-input"
+            type="number"
             placeholder="Max $/day"
             value={maxPrice}
             onChange={(e) => setMaxPrice(e.target.value)}
@@ -150,7 +160,7 @@ export default function CarsPage() {
             <p className="listing-error">Could not load cars right now.</p>
           ) : filteredCars.length === 0 ? (
             <p className="listing-empty">
-              {allCars.length === 0 ? "No cars available right now." : "No cars match your search."}
+              {allCars.length === 0 ? "No cars available right now." :"No cars match your search."}
             </p>
           ) : (
             filteredCars.map((car) => {
@@ -161,7 +171,7 @@ export default function CarsPage() {
                 <div className="listing-card-wrap" style={{ position: "relative" }} key={car._id}>
                   <button
                     type="button"
-                    className={`card-wishlist${isActive ? " is-active" : ""}`}
+                    className={`card-wishlist${isActive ? " is-active": ""}`}
                     aria-label="Toggle wishlist"
                     onClick={(e) => { e.preventDefault(); toggleWishlist(car._id); }}
                   >
@@ -172,10 +182,10 @@ export default function CarsPage() {
                   <Link className="listing-card" href={`/cars/${car._id}`}>
                     <div className="listing-thumb">
                       {car.photos && car.photos[0] ? (
-                        <img src={car.photos[0]} alt={car.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy" />
+                        <img src={car.photos[0]} alt={car.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} loading="lazy"/>
                       ) : (
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                          <path d="M5 17h14M5 17a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm14 0a2 2 0 1 0 4 0 2 2 0 0 0-4 0zM3 17V9l2-5h14l2 5v8" />
+                          <path d="M5 17h14M5 17a2 2 0 1 1-4 0 2 2 0 01 4 0zm14 0a2 2 0 1 0 4 0 2 2 0 0 0-4 0zM3 17V9l2-5h14l2 5v8" />
                         </svg>
                       )}
                       {car.year && <span className="listing-badge-corner">{car.year}</span>}
@@ -193,17 +203,6 @@ export default function CarsPage() {
                         {rating && (
                           <span className="listing-meta-item">&#9733; {rating.avgRating} ({rating.count})</span>
                         )}
-                        {car.seats ? (
-                          <span className="listing-meta-item">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                              <circle cx="9" cy="7" r="4" />
-                              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                            </svg>
-                            {car.seats} seats
-                          </span>
-                        ) : null}
                         {car.transmission ? (
                           <span className="listing-meta-item">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
