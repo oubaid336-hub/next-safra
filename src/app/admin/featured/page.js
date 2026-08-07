@@ -69,6 +69,7 @@ export default function AdminFeaturedPage() {
     const res = await fetch(`${API}/api/featured`, {
       method: "POST",
       credentials: "include",
+      credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ houseIds, carIds }),
     });
@@ -102,7 +103,7 @@ export default function AdminFeaturedPage() {
         <>
           <div className="picker-section">
             <h2>Houses</h2>
-            <p className="hint">Pick any number Ã¢â‚¬â€ only the first 2 will show on the homepage.</p>
+            <p className="hint">Pick any number ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â only the first 2 will show on the homepage.</p>
             <div id="houseList">
               {filteredHouses.map((h) => (
                 <label key={h._id}>
@@ -124,7 +125,7 @@ export default function AdminFeaturedPage() {
 
           <div className="picker-section">
             <h2>Cars</h2>
-            <p className="hint">Pick any number Ã¢â‚¬â€ only the first 1 will show on the homepage.</p>
+            <p className="hint">Pick any number ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â only the first 1 will show on the homepage.</p>
             <div id="carList">
               {filteredCars.map((c) => (
                 <label key={c._id}>
