@@ -7,7 +7,7 @@ import { getApiBaseUrl } from "@/lib/config";
 
 const STATUS_LABELS = {
   pending: "Pending",
-  "pending-cash-payment": "Reserved â€” Pay on Arrival",
+  "pending-cash-payment": "Reserved Ã¢â‚¬â€ Pay on Arrival",
   confirmed: "Confirmed",
   cancelled: "Cancelled",
 };
@@ -189,7 +189,7 @@ export default function MyBookingsPage() {
                     {listing?.location && <p className="booking-card-location">{listing.location}</p>}
 
                     <p className="booking-card-dates">
-                      {formatDate(booking.startDate)} – {formatDate(booking.endDate)}
+                      {formatDate(booking.startDate)} â€“ {formatDate(booking.endDate)}
                     </p>
 
                     <p className="booking-card-total">
@@ -210,7 +210,7 @@ export default function MyBookingsPage() {
                           onClick={() => handleCancel(booking)}
                           disabled={cancellingId === booking._id}
                         >
-                          {cancellingId === booking._id ? "Cancellingâ€¦" : "Cancel Booking"}
+                          {cancellingId === booking._id ? "CancellingÃ¢â‚¬Â¦" : "Cancel Booking"}
                         </button>
                       )}
                     </div>
