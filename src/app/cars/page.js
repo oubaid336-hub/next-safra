@@ -70,13 +70,17 @@ export default function CarsPage() {
     loadCars();
   }, []);
 
+  const locationOptions = useMemo(() => {
+    const set = new Set(allCars.map((c) => c.location).filter(Boolean));
+    return Array.from(set).sort();
+  }, [allCars]);
+
   const filteredCars = useMemo(() => {
-    const loc = locationFilter.trim().toLowerCase();
     const minP = parseFloat(minPrice);
     const maxP = parseFloat(maxPrice);
 
     return allCars.filter((c) => {
-      const matchesLocation = !loc || (c.location || "").toLowerCase().includes(loc);
+      const matchesLocation = !locationFilter || c.location === locationFilter;
       const matchesTransmission = !transmission || c.transmission === transmission;
       const matchesMinPrice = isNaN(minP) || c.pricePerDay >= minP;
       const matchesMaxPrice = isNaN(maxP) || c.pricePerDay <= maxP;
@@ -113,13 +117,16 @@ export default function CarsPage() {
 
       <div className="container">
         <div className="filter-bar">
-          <input
+          <select
             className="form-input"
-            type="text"
-            placeholder="Search location..."
             value={locationFilter}
             onChange={(e) => setLocationFilter(e.target.value)}
-          />
+          >
+            <option value="">All Locations</option>
+            {locationOptions.map((loc) => (
+              <option key={loc} value={loc}>{loc}</option>
+            ))}
+          </select>
           <select
             className="form-input"
             value={transmission}

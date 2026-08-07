@@ -86,14 +86,18 @@ export default function HousesPage() {
     loadHouses();
   }, []);
 
+  const locationOptions = useMemo(() => {
+    const set = new Set(allHouses.map((h) => h.location).filter(Boolean));
+    return Array.from(set).sort();
+  }, [allHouses]);
+
   const filteredHouses = useMemo(() => {
-    const loc = locationFilter.trim().toLowerCase();
     const maxG = parseFloat(maxGuests);
     const minP = parseFloat(minPrice);
     const maxP = parseFloat(maxPrice);
 
     return allHouses.filter((h) => {
-      const matchesLocation = !loc || (h.location || "").toLowerCase().includes(loc);
+      const matchesLocation = !locationFilter || h.location === locationFilter;
       const matchesMaxGuests = isNaN(maxG) || (h.capacity || 0) <= maxG;
       const matchesMinPrice = isNaN(minP) || h.pricePerNight >= minP;
       const matchesMaxPrice = isNaN(maxP) || h.pricePerNight <= maxP;
@@ -130,13 +134,16 @@ export default function HousesPage() {
 
       <div className="container">
         <div className="filter-bar">
-          <input
+          <select
             className="form-input"
-            type="text"
-            placeholder="Search location..."
             value={locationFilter}
             onChange={(e) => setLocationFilter(e.target.value)}
-          />
+          >
+            <option value="">All Locations</option>
+            {locationOptions.map((loc) => (
+              <option key={loc} value={loc}>{loc}</option>
+            ))}
+          </select>
           <input
             className="form-input"
             type="number"

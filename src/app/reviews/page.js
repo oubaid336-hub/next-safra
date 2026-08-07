@@ -129,7 +129,7 @@ function WriteReviewContent() {
                     aria-label={`${n} star${n > 1 ? "s" : ""}`}
                     onClick={() => setRating(n)}
                   >
-                    ?
+                    &#9733;
                   </button>
                 ))}
               </div>
