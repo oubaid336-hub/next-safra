@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* ==========================================================================
-   SAFRA Ã¢â‚¬â€ Shared Design System
+   SAFRA — Shared Design System
    Ported from the React/Tailwind reference (tailwind.config.js + index.css)
    Mobile-first: base styles = phone, then min-width media queries scale up.
    ========================================================================== */
