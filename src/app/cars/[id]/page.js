@@ -88,7 +88,7 @@ export default function CarDetailPage() {
 
     async function setupWishlist() {
       try {
-        const res = await fetch(`${API}/api/wishlist/`, { credentials: "include" });
+        const res = await fetch(`${API}/api/wishlist/`, { credentials:"include" });
         if (!res.ok) {
           if (!cancelled) setWishlistVisible(false);
           return;
@@ -125,7 +125,7 @@ export default function CarDetailPage() {
     }
   }
 
-  const photos = car?.photos || [];
+  const photos = (car?.photos || []).filter(Boolean);
 
   return (
     <main className="car-detail-page">
@@ -167,7 +167,7 @@ export default function CarDetailPage() {
                   <button
                     type="button"
                     key={i}
-                    className={`gallery-thumb${i === activePhoto ? "is-active" : ""}`}
+                    className={`gallery-thumb${i === activePhoto ? " is-active" : ""}`}
                     onClick={() => setActivePhoto(i)}
                   >
                     <img src={p} alt="" loading="lazy" />
@@ -190,20 +190,12 @@ export default function CarDetailPage() {
 
             <div className="car-specs">
               <div className="spec-item">
-                <div className="label">Seats</div>
-                <div className="value">{car.seats ?? "-"}</div>
-              </div>
-              <div className="spec-item">
                 <div className="label">Transmission</div>
                 <div className="value">{car.transmission ?? "-"}</div>
               </div>
               <div className="spec-item">
                 <div className="label">Fuel Type</div>
                 <div className="value">{car.fuelType ?? "-"}</div>
-              </div>
-              <div className="spec-item">
-                <div className="label">Year</div>
-                <div className="value">{car.year ?? "-"}</div>
               </div>
             </div>
 
@@ -230,7 +222,7 @@ export default function CarDetailPage() {
               </div>
               <div id="reviewsList">
                 {reviewsLoading ? (
-                  <p className="no-reviews">Loading reviewsÃ¢â‚¬Â¦</p>
+                  <p className="no-reviews">Loading reviews...</p>
                 ) : reviewsError ? (
                   <p className="no-reviews">Could not load reviews.</p>
                 ) : reviews.length === 0 ? (
@@ -281,7 +273,7 @@ export default function CarDetailPage() {
           color: var(--safra-terracotta);
           transform: translateX(-4px);
         }
-        .back-link svg { width: 14px; height: 14px; }
+        .back-link svg { width: 11px; height: 11px; }
 
         #detailLayout {
           background: #fff;
@@ -371,7 +363,7 @@ export default function CarDetailPage() {
           height: 16px;
           flex-shrink: 0;
           background-color: var(--safra-terracotta);
-          -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0 118 0z"/><circle cx="12" cy="10" r="3"/></svg>') no-repeat center / contain;
+          -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>') no-repeat center / contain;
           mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>') no-repeat center / contain;
         }
 
@@ -411,7 +403,7 @@ export default function CarDetailPage() {
 
         #bookNowBtn {
           flex: 1; min-width: 200px; display: inline-flex; align-items: center; justify-content: center;
-          background: linear-gradient(135deg, var(--safra-terracotta), var(--safra-terracottalight));
+          background: linear-gradient(135deg, var(--safra-terracotta),var(--safra-terracottalight));
           color: #fff; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 15px;
           padding: 16px 32px; border-radius: 12px; text-decoration: none;
           box-shadow: 0 8px 20px rgba(196, 92, 62, .3); transition: all .25s ease;

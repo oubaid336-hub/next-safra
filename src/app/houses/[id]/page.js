@@ -40,19 +40,16 @@ export default function HouseDetailPage() {
         const data = await res.json();
         if (cancelled) return;
         setHouse(data);
-
-        try {
-          const countsRes = await fetch(`${API}/api/bookings/counts/house`);
-          if (countsRes.ok) {
-            const counts = await countsRes.json();
-            const bookingCount = counts[String(data._id)] ?? 0;
-            if (!cancelled) setIsNew(bookingCount <= 2);
-          }
-        } catch (err) {
-          // non-fatal
-        }
-
         setLoading(false);
+
+        fetch(`${API}/api/bookings/counts/house`)
+          .then((countsRes) => (countsRes.ok ? countsRes.json() : null))
+          .then((counts) => {
+            if (!counts || cancelled) return;
+            const bookingCount = counts[String(data._id)] ?? 0;
+            setIsNew(bookingCount <= 2);
+          })
+          .catch(() => {});
       } catch (err) {
         console.error("Failed to load house:", err);
         if (!cancelled) {
@@ -106,7 +103,7 @@ export default function HouseDetailPage() {
 
     async function setupWishlist() {
       try {
-        const res = await fetch(`${API}/api/wishlist/`, { credentials: "include" });
+        const res = await fetch(`${API}/api/wishlist/`, { credentials:"include" });
         if (!res.ok) {
           if (!cancelled) setWishlistVisible(false);
           return;
@@ -143,7 +140,8 @@ export default function HouseDetailPage() {
     }
   }
 
-  const photos = house?.photos || [];
+  const photos = (house?.photos || []).filter(Boolean);
+  const amenities = (house?.amenities || []).filter((a) => (a || "").toLowerCase() !== "parking");
   const discountedPrice = house ? Math.round(house.pricePerNight * 0.9) : 0;
 
   return (
@@ -234,11 +232,11 @@ export default function HouseDetailPage() {
 
             <p className="detail-desc">{house.description || ""}</p>
 
-            {house.amenities && house.amenities.length > 0 && (
+            {amenities.length > 0 && (
               <div id="amenitiesSection">
                 <h3 className="amenities-title">Amenities</h3>
                 <div className="amenities-grid">
-                  {house.amenities.map((a, i) => (
+                  {amenities.map((a, i) => (
                     <div className="amenity" key={i}>
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 6 9 17l-5-5"/></svg>
                       <span>{a}</span>
@@ -269,7 +267,7 @@ export default function HouseDetailPage() {
               </div>
               <div id="reviewsList">
                 {reviewsLoading ? (
-                  <p className="no-reviews">Loading reviews…</p>
+                  <p className="no-reviews">Loading reviews...</p>
                 ) : reviewsError ? (
                   <p className="no-reviews">Could not load reviews.</p>
                 ) : reviews.length === 0 ? (
@@ -320,7 +318,7 @@ export default function HouseDetailPage() {
           color: var(--safra-terracotta);
           transform: translateX(-4px);
         }
-        .back-link svg { width: 14px; height: 14px; }
+        .back-link svg { width: 11px; height: 11px; }
 
         #detailLayout {
           background: #fff;
@@ -463,7 +461,7 @@ export default function HouseDetailPage() {
 
         #bookNowBtn {
           flex: 1; min-width: 200px; display: inline-flex; align-items: center; justify-content: center;
-          background: linear-gradient(135deg, var(--safra-terracotta), var(--safra-terracottalight));
+          background: linear-gradient(135deg, var(--safra-terracotta),var(--safra-terracottalight));
           color: #fff; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 15px;
           padding: 16px 32px; border-radius: 12px; text-decoration: none;
           box-shadow: 0 8px 20px rgba(196, 92, 62, .3); transition: all .25s ease;
