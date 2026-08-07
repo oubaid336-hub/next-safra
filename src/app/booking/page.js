@@ -79,12 +79,19 @@ function BookingContent() {
     return Math.round((end - start) / msPerUnit);
   }
 
-  function overlapsBookedRange(start, end) {
+  function findConflict(start, end) {
     const startTime = new Date(start).getTime();
     const endTime = new Date(end).getTime();
-    return bookedRanges.some(
+    return bookedRanges.find(
       (r) => startTime < new Date(r.endDate).getTime() && endTime > new Date(r.startDate).getTime()
     );
+  }
+
+  function conflictMessage(conflict) {
+    const isConfirmed = conflict.status === "confirmed" || conflict.status === "pending-cash-payment";
+    return isConfirmed
+      ? "Those dates are already booked. Please choose different dates."
+      : "Those dates have a pending booking under review \u2014 try different dates or check back shortly.";
   }
 
   function formatPrice(amount) {
@@ -104,8 +111,9 @@ function BookingContent() {
       );
       return;
     }
-    if (overlapsBookedRange(startDate, endDate)) {
-      setDateWarning("Those dates overlap with an existing booking. Please choose different dates.");
+    const conflict = findConflict(startDate, endDate);
+    if (conflict) {
+      setDateWarning(conflictMessage(conflict));
       return;
     }
     setDateWarning("");
@@ -124,22 +132,19 @@ function BookingContent() {
     e.preventDefault();
     setFormMessage(null);
 
-    if (!startDate || !endDate || unitsBetween(startDate, endDate) <= 0) {
+    if (!startDate || !endDate) {
       setFormMessage({
         type: "error",
         text:
           listingType === "house"
-            ? "Please choose a valid check-in and check-out date."
-            : "Please choose a valid pickup and return date.",
+            ? "Please choose a check-in and check-out date."
+            : "Please choose a pickup and return date.",
       });
       return;
     }
 
-    if (overlapsBookedRange(startDate, endDate)) {
-      setFormMessage({
-        type: "error",
-        text: "Those dates overlap with an existing booking. Please choose different dates.",
-      });
+    if (unitsBetween(startDate, endDate) <= 0 || dateWarning) {
+      // Already surfaced above the button by the effect above — don't show it twice.
       return;
     }
 
@@ -308,8 +313,8 @@ function BookingContent() {
                 </div>
               )}
 
-              <button type="submit" className="btn btn-terracotta" id="submitBtn" disabled={submitting}>
-                {submitting ? "Submittingâ€¦" : "Request Booking"}
+              <button type="submit" className="btn btn-terracotta" id="submitBtn" disabled={submitting || !!dateWarning}>
+                {submitting ? "Submitting\u2026" : "Request Booking"}
               </button>
 
               {formMessage && <div className={`form-message ${formMessage.type}`}>{formMessage.text}</div>}
