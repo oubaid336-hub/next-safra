@@ -61,12 +61,19 @@ function CarBookingContent() {
     loadAvailability(carId);
   }, [carId, loadCar, loadAvailability]);
 
-  function overlapsBookedRange(start, end) {
+  function findConflict(start, end) {
     const startTime = new Date(start).getTime();
     const endTime = new Date(end).getTime();
-    return bookedRanges.some(
+    return bookedRanges.find(
       (r) => startTime < new Date(r.endDate).getTime() && endTime > new Date(r.startDate).getTime()
     );
+  }
+
+  function conflictMessage(conflict) {
+    const isConfirmed = conflict.status === "confirmed" || conflict.status === "pending-cash-payment";
+    return isConfirmed
+      ? "Those dates are already booked. Please choose different dates."
+      : "Those dates have a pending booking under review \u2014 try different dates or check back shortly.";
   }
 
   function nightsBetween(startStr, endStr) {
@@ -94,9 +101,10 @@ function CarBookingContent() {
       return;
     }
 
-    if (overlapsBookedRange(newStart, newEnd)) {
+    const conflict = findConflict(newStart, newEnd);
+    if (conflict) {
       setPriceBreakdown(null);
-      setFormMessage({ text: "Those dates overlap with an existing booking. Please choose different dates.", type: "warning" });
+      setFormMessage({ text: conflictMessage(conflict), type: "warning" });
       return;
     }
 
@@ -129,15 +137,14 @@ function CarBookingContent() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setFormMessage({ text: "", type: "" });
 
-    if (!startDate || !endDate || nightsBetween(startDate, endDate) <= 0) {
-      setFormMessage({ text: "Please choose a valid pickup and return date.", type: "error" });
+    if (!startDate || !endDate) {
+      setFormMessage({ text: "Please choose a pickup and return date.", type: "error" });
       return;
     }
 
-    if (overlapsBookedRange(startDate, endDate)) {
-      setFormMessage({ text: "Those dates overlap with an existing booking. Please choose different dates.", type: "error" });
+    if (nightsBetween(startDate, endDate) <= 0 || formMessage.type === "warning") {
+      // Already surfaced by handleDatesChanged — don't show it twice.
       return;
     }
 
@@ -168,7 +175,7 @@ function CarBookingContent() {
       if (res.status === 409) {
         const data = await safeJson(res);
         setFormMessage({
-          text: data.message || "Those dates were just booked bysomeone else. Please choose different dates.",
+          text: data.message || "Those dates were just booked by someone else. Please choose different dates.",
           type: "warning",
         });
         await loadAvailability(carId);
@@ -186,7 +193,7 @@ function CarBookingContent() {
         window.location.href = `/payment?bookingId=${booking._id}`;
         return;
       }
-      setFormMessage({ text: "Booking created, but something went wrong loadingpayment options. Check My Bookings.", type: "warning" });
+      setFormMessage({ text: "Booking created, but something went wrong loading payment options. Check My Bookings.", type: "warning" });
     } catch (err) {
       console.error("Booking submission failed:", err);
       setFormMessage({ text: "Could not reach the server. Please check your connection and try again.", type: "error" });
@@ -217,7 +224,7 @@ function CarBookingContent() {
             <p className="specs" id="car-specs">
               {[car.seats ? `${car.seats} seats` : null, car.transmission || null, car.year || null]
                 .filter(Boolean)
-                .join(" Â· ")}
+                .join(" \u00b7 ")}
             </p>
             <p id="car-description">{car.description || ""}</p>
           </section>
@@ -254,8 +261,8 @@ function CarBookingContent() {
                 </div>
               )}
 
-              <button type="submit" className="btn btn-terracotta" id="submit-btn" disabled={submitting}>
-                {submitting ? "Submittingâ€¦" : "Request Booking"}
+              <button type="submit" className="btn btn-terracotta" id="submit-btn" disabled={submitting || formMessage.type === "warning"}>
+                {submitting ? "Submitting\u2026" : "Request Booking"}
               </button>
 
               {formMessage.text && (
